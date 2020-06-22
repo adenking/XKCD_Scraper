@@ -13,9 +13,12 @@ class XKCDSpider(scrapy.Spider):
     def parse(self, response):
         comic = ItemLoader(item=XkcdScrapyItem(), response=response)
         comic.add_xpath('comic_title', '//*[@id="ctitle"]/text()')
-        image_url = 'https:' + \
-            response.selector.xpath('//*[@id="comic"]/img/@src').get()
-        comic.add_value('image_urls', image_url)
+        try:
+            image_url = 'https:' + \
+                response.selector.xpath('//*[@id="comic"]/img/@src').get()
+            comic.add_value('image_urls', image_url)
+        except:
+            comic.add_xpath('image_urls', '/html/body/div[2]/div[2]/a/@href')
         comic.add_xpath('image_title', '//*[@id="comic"]/img/@title')
         comic.add_xpath('image_alt_text', '//*[@id="comic"]/img/@alt')
         comic.add_value('comic_number', response.request.url)
